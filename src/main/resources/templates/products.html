@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - TechMart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        .navbar-brand { 
+            font-weight: bold; 
+            font-size: 1.5rem;
+        }
+        .product-grid { 
+            margin-top: 2rem; 
+        }
+        .product-card {
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 2rem;
+            height: 100%;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+        .product-image {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .product-icon {
+            font-size: 4rem;
+            color: #6c757d;
+        }
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .product-stock {
+            font-size: 0.9rem;
+        }
+        .stock-low { color: #dc3545; }
+        .stock-medium { color: #ffc107; }
+        .stock-high { color: #28a745; }
+        .filters-section {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        .cart-icon {
+            position: relative;
+        }
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/legacy-ecommerce/">
+                <i class="fas fa-laptop"></i> TechMart
+            </a>
+            <div class="navbar-nav ml-auto">
+                <a class="nav-link" href="/legacy-ecommerce/">Home</a>
+                <a class="nav-link active" href="/legacy-ecommerce/products">Products</a>
+                <a class="nav-link" href="/legacy-ecommerce/orders">My Orders</a>
+                <a class="nav-link cart-icon" href="/legacy-ecommerce/cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge" id="cartCount">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container product-grid">
+        <!-- Page Header -->
+        <div class="row">
+            <div class="col-12">
+                <h2>Our Products</h2>
+                <p class="text-muted">Discover our wide range of technology products</p>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="row">
+            <div class="col-12">
+                <div class="filters-section">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="categoryFilter">Category</label>
+                            <select class="form-control" id="categoryFilter">
+                                <option value="">All Categories</option>
+                                <option value="1">Computers & Laptops</option>
+                                <option value="2">Mobile Devices</option>
+                                <option value="3">Audio & Accessories</option>
+                                <option value="4">Wearables</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="priceFilter">Price Range</label>
+                            <select class="form-control" id="priceFilter">
+                                <option value="">All Prices</option>
+                                <option value="0-50">Under $50</option>
+                                <option value="50-200">$50 - $200</option>
+                                <option value="200-500">$200 - $500</option>
+                                <option value="500-1000">$500 - $1000</option>
+                                <option value="1000+">Over $1000</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="searchInput">Search Products</label>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Search by name...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="row" id="productsGrid">
+            <!-- Products will be loaded here -->
+        </div>
+        
+        <div id="loading" class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let allProducts = [];
+
+        $(document).ready(function() {
+            loadProducts();
+            updateCartCount();
+            
+            // Filter event listeners
+            $('#categoryFilter, #priceFilter').change(filterProducts);
+            $('#searchInput').on('input', filterProducts);
+        });
+
+        function loadProducts() {
+            $.ajax({
+                url: '/legacy-ecommerce/api/products',
+                method: 'GET',
+                success: function(products) {
+                    $('#loading').hide();
+                    allProducts = products;
+                    displayProducts(products);
+                },
+                error: function() {
+                    $('#loading').hide();
+                    $('#productsGrid').html('<div class="col-12 text-center"><p class="text-danger">Error loading products</p></div>');
+                }
+            });
+        }
+
+        function displayProducts(products) {
+            let html = '';
+            if (products.length === 0) {
+                html = '<div class="col-12 text-center"><p class="text-muted">No products found matching your criteria.</p></div>';
+            } else {
+                products.forEach(function(product) {
+                    const stockClass = product.stockQuantity < 20 ? 'stock-low' : 
+                                     product.stockQuantity < 50 ? 'stock-medium' : 'stock-high';
+                    const stockText = product.stockQuantity < 20 ? 'Low Stock' : 
+                                    product.stockQuantity < 50 ? 'Limited Stock' : 'In Stock';
+                    
+                    const icon = getProductIcon(product.categoryId);
+                    
+                    html += `
+                        <div class="col-lg-3 col-md-4 col-sm-6">
+                            <div class="card product-card">
+                                <div class="product-image">
+                                    <i class="${icon} product-icon"></i>
+                                </div>
+                                <div class="card-body">
+                                    <h6 class="card-title">${product.name}</h6>
+                                    <p class="card-text text-muted small">${product.description ? product.description.substring(0, 80) + '...' : 'No description available'}</p>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="product-price">$${product.price}</span>
+                                        <span class="product-stock ${stockClass}">${stockText}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <a href="/legacy-ecommerce/product/${product.id}" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                        <button class="btn btn-primary btn-sm" onclick="addToCart(${product.id}, '${product.name}', ${product.price})" ${product.stockQuantity === 0 ? 'disabled' : ''}>
+                                            <i class="fas fa-cart-plus"></i> Add to Cart
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            $('#productsGrid').html(html);
+        }
+
+        function getProductIcon(categoryId) {
+            const icons = {
+                1: 'fas fa-laptop',
+                2: 'fas fa-mobile-alt',
+                3: 'fas fa-headphones',
+                4: 'fas fa-watch'
+            };
+            return icons[categoryId] || 'fas fa-box';
+        }
+
+        function filterProducts() {
+            const category = $('#categoryFilter').val();
+            const priceRange = $('#priceFilter').val();
+            const searchTerm = $('#searchInput').val().toLowerCase();
+
+            let filtered = allProducts.filter(product => {
+                // Category filter
+                if (category && product.categoryId != category) return false;
+                
+                // Search filter
+                if (searchTerm && !product.name.toLowerCase().includes(searchTerm)) return false;
+                
+                // Price filter
+                if (priceRange) {
+                    const price = parseFloat(product.price);
+                    if (priceRange === '0-50' && price >= 50) return false;
+                    if (priceRange === '50-200' && (price < 50 || price >= 200)) return false;
+                    if (priceRange === '200-500' && (price < 200 || price >= 500)) return false;
+                    if (priceRange === '500-1000' && (price < 500 || price >= 1000)) return false;
+                    if (priceRange === '1000+' && price < 1000) return false;
+                }
+                
+                return true;
+            });
+
+            displayProducts(filtered);
+        }
+
+        function addToCart(productId, productName, price) {
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: productId,
+                    name: productName,
+                    price: price,
+                    quantity: 1
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            
+            // Show success message
+            const toast = $(`
+                <div class="alert alert-success alert-dismissible fade show position-fixed" style="top: 20px; right: 20px; z-index: 9999;">
+                    <strong>Added to cart!</strong> ${productName}
+                    <button type="button" class="close" data-dismiss="alert">
+                        <span>&times;</span>
+                    </button>
+                </div>
+            `);
+            $('body').append(toast);
+            setTimeout(() => toast.alert('close'), 3000);
+        }
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            $('#cartCount').text(totalItems);
+        }
+    </script>
+</body>
+</html>

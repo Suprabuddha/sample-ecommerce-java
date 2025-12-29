@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechMart - Your Technology Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+        }
+        .hero-section h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        .hero-section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        .feature-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .feature-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        .product-preview {
+            background-color: #f8f9fa;
+            padding: 3rem 0;
+        }
+        .product-card {
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-3px);
+        }
+        .product-price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 3rem 0 2rem 0;
+            margin-top: 4rem;
+        }
+        .cart-icon {
+            position: relative;
+        }
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/legacy-ecommerce/">
+                <i class="fas fa-laptop"></i> TechMart
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/legacy-ecommerce/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/legacy-ecommerce/products">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/legacy-ecommerce/orders">My Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link cart-icon" href="/legacy-ecommerce/cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-badge" id="cartCount">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1>Welcome to TechMart</h1>
+            <p class="lead">Discover the latest technology products at unbeatable prices</p>
+            <a href="/legacy-ecommerce/products" class="btn btn-light btn-lg">
+                <i class="fas fa-shopping-bag"></i> Shop Now
+            </a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="card feature-card">
+                    <div class="card-body">
+                        <i class="fas fa-shipping-fast feature-icon"></i>
+                        <h5 class="card-title">Fast Shipping</h5>
+                        <p class="card-text">Free shipping on orders over $50. Get your products delivered quickly and safely.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card feature-card">
+                    <div class="card-body">
+                        <i class="fas fa-shield-alt feature-icon"></i>
+                        <h5 class="card-title">Secure Shopping</h5>
+                        <p class="card-text">Your personal information is protected with industry-standard security measures.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card feature-card">
+                    <div class="card-body">
+                        <i class="fas fa-headset feature-icon"></i>
+                        <h5 class="card-title">24/7 Support</h5>
+                        <p class="card-text">Our customer support team is available around the clock to help you.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Products Section -->
+    <section class="product-preview">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-4">
+                    <h2>Featured Products</h2>
+                    <p class="text-muted">Check out our most popular items</p>
+                </div>
+            </div>
+            <div class="row" id="featuredProducts">
+                <!-- Featured products will be loaded here -->
+            </div>
+            <div class="row">
+                <div class="col-12 text-center">
+                    <a href="/legacy-ecommerce/products" class="btn btn-primary btn-lg">
+                        View All Products <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h4>Stay Updated</h4>
+                        <p>Subscribe to our newsletter for the latest deals and product updates</p>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="email" class="form-control" placeholder="Enter your email">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-light" type="button">Subscribe</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-laptop"></i> TechMart</h5>
+                    <p>Your trusted partner for all technology needs. Quality products, competitive prices, and excellent service.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/legacy-ecommerce/products" class="text-light">Products</a></li>
+                        <li><a href="/legacy-ecommerce/orders" class="text-light">My Orders</a></li>
+                        <li><a href="#" class="text-light">Support</a></li>
+                        <li><a href="#" class="text-light">About Us</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact Info</h5>
+                    <p><i class="fas fa-envelope"></i> support@techmart.com</p>
+                    <p><i class="fas fa-phone"></i> 1-800-TECHMART</p>
+                    <div>
+                        <a href="#" class="text-light mr-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-light mr-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-light mr-3"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p>&copy; 2024 TechMart. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            loadFeaturedProducts();
+            updateCartCount();
+        });
+
+        function loadFeaturedProducts() {
+            $.ajax({
+                url: '/legacy-ecommerce/api/products',
+                method: 'GET',
+                success: function(products) {
+                    displayFeaturedProducts(products.slice(0, 4));
+                },
+                error: function() {
+                    $('#featuredProducts').html('<div class="col-12 text-center"><p class="text-danger">Unable to load products</p></div>');
+                }
+            });
+        }
+
+        function displayFeaturedProducts(products) {
+            let html = '';
+            products.forEach(function(product) {
+                html += `
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <div class="card product-card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-laptop fa-3x text-primary mb-3"></i>
+                                <h6 class="card-title">${product.name}</h6>
+                                <p class="card-text text-muted small">${product.description ? product.description.substring(0, 60) + '...' : ''}</p>
+                                <p class="product-price">$${product.price}</p>
+                                <a href="/legacy-ecommerce/product/${product.id}" class="btn btn-primary btn-sm">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            $('#featuredProducts').html(html);
+        }
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            $('#cartCount').text(cart.length);
+        }
+    </script>
+</body>
+</html>

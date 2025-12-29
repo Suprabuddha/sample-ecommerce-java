@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - TechMart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        .navbar-brand { 
+            font-weight: bold; 
+            font-size: 1.5rem;
+        }
+        .product-detail { 
+            margin-top: 2rem; 
+        }
+        .product-image-section {
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .product-icon {
+            font-size: 8rem;
+            color: #6c757d;
+        }
+        .product-price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .product-stock {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        .stock-low { color: #dc3545; }
+        .stock-medium { color: #ffc107; }
+        .stock-high { color: #28a745; }
+        .quantity-selector {
+            max-width: 120px;
+        }
+        .add-to-cart-section {
+            background-color: #f8f9fa;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            margin-top: 2rem;
+        }
+        .product-specs {
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        .cart-icon {
+            position: relative;
+        }
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .breadcrumb {
+            background-color: transparent;
+            padding: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/legacy-ecommerce/">
+                <i class="fas fa-laptop"></i> TechMart
+            </a>
+            <div class="navbar-nav ml-auto">
+                <a class="nav-link" href="/legacy-ecommerce/">Home</a>
+                <a class="nav-link" href="/legacy-ecommerce/products">Products</a>
+                <a class="nav-link" href="/legacy-ecommerce/orders">My Orders</a>
+                <a class="nav-link cart-icon" href="/legacy-ecommerce/cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge" id="cartCount">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container product-detail">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/legacy-ecommerce/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/legacy-ecommerce/products">Products</a></li>
+                <li class="breadcrumb-item active" aria-current="page" id="productBreadcrumb">Product Details</li>
+            </ol>
+        </nav>
+
+        <div id="productContent">
+            <!-- Product content will be loaded here -->
+        </div>
+        
+        <div id="loading" class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Related Products Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h4>Related Products</h4>
+                <div class="row" id="relatedProducts">
+                    <!-- Related products will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentProduct = null;
+
+        $(document).ready(function() {
+            const productId = getProductIdFromUrl();
+            if (productId) {
+                loadProduct(productId);
+            } else {
+                showError('Product not found');
+            }
+            updateCartCount();
+        });
+
+        function getProductIdFromUrl() {
+            const path = window.location.pathname;
+            const segments = path.split('/');
+            return segments[segments.length - 1];
+        }
+
+        function loadProduct(productId) {
+            $.ajax({
+                url: `/legacy-ecommerce/api/products/${productId}`,
+                method: 'GET',
+                success: function(product) {
+                    $('#loading').hide();
+                    currentProduct = product;
+                    displayProduct(product);
+                    loadRelatedProducts(product.categoryId, product.id);
+                },
+                error: function() {
+                    $('#loading').hide();
+                    showError('Product not found or error loading product details');
+                }
+            });
+        }
+
+        function displayProduct(product) {
+            const stockClass = product.stockQuantity < 20 ? 'stock-low' : 
+                             product.stockQuantity < 50 ? 'stock-medium' : 'stock-high';
+            const stockText = product.stockQuantity === 0 ? 'Out of Stock' :
+                            product.stockQuantity < 20 ? 'Low Stock' : 
+                            product.stockQuantity < 50 ? 'Limited Stock' : 'In Stock';
+            
+            const icon = getProductIcon(product.categoryId);
+            const categoryName = getCategoryName(product.categoryId);
+            
+            $('#productBreadcrumb').text(product.name);
+            
+            const html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="product-image-section">
+                            <i class="${icon} product-icon"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h1>${product.name}</h1>
+                        <p class="text-muted mb-3">${categoryName}</p>
+                        <p class="lead">${product.description || 'No description available for this product.'}</p>
+                        
+                        <div class="mb-3">
+                            <span class="product-price">$${product.price}</span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <span class="product-stock ${stockClass}">
+                                <i class="fas fa-box"></i> ${stockText}
+                                ${product.stockQuantity > 0 ? `(${product.stockQuantity} available)` : ''}
+                            </span>
+                        </div>
+
+                        ${product.stockQuantity > 0 ? `
+                        <div class="add-to-cart-section">
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <label for="quantity">Quantity:</label>
+                                    <input type="number" class="form-control quantity-selector" id="quantity" value="1" min="1" max="${product.stockQuantity}">
+                                </div>
+                                <div class="col-md-8">
+                                    <button class="btn btn-primary btn-lg btn-block" onclick="addToCart()">
+                                        <i class="fas fa-cart-plus"></i> Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        ` : `
+                        <div class="add-to-cart-section">
+                            <button class="btn btn-secondary btn-lg btn-block" disabled>
+                                <i class="fas fa-times"></i> Out of Stock
+                            </button>
+                        </div>
+                        `}
+                    </div>
+                </div>
+
+                <div class="product-specs">
+                    <h5><i class="fas fa-info-circle"></i> Product Information</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Product ID:</strong> ${product.id}</p>
+                            <p><strong>Category:</strong> ${categoryName}</p>
+                            <p><strong>Price:</strong> $${product.price}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Availability:</strong> ${stockText}</p>
+                            <p><strong>Stock Quantity:</strong> ${product.stockQuantity}</p>
+                            <p><strong>Added:</strong> ${new Date(product.createdDate).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            $('#productContent').html(html);
+        }
+
+        function loadRelatedProducts(categoryId, currentProductId) {
+            $.ajax({
+                url: '/legacy-ecommerce/api/products',
+                method: 'GET',
+                success: function(products) {
+                    const related = products
+                        .filter(p => p.categoryId === categoryId && p.id !== currentProductId)
+                        .slice(0, 4);
+                    displayRelatedProducts(related);
+                },
+                error: function() {
+                    $('#relatedProducts').html('<div class="col-12"><p class="text-muted">Unable to load related products</p></div>');
+                }
+            });
+        }
+
+        function displayRelatedProducts(products) {
+            if (products.length === 0) {
+                $('#relatedProducts').html('<div class="col-12"><p class="text-muted">No related products found</p></div>');
+                return;
+            }
+
+            let html = '';
+            products.forEach(function(product) {
+                const icon = getProductIcon(product.categoryId);
+                html += `
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="${icon} fa-2x text-primary mb-2"></i>
+                                <h6 class="card-title">${product.name}</h6>
+                                <p class="text-success font-weight-bold">$${product.price}</p>
+                                <a href="/legacy-ecommerce/product/${product.id}" class="btn btn-outline-primary btn-sm">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            $('#relatedProducts').html(html);
+        }
+
+        function getProductIcon(categoryId) {
+            const icons = {
+                1: 'fas fa-laptop',
+                2: 'fas fa-mobile-alt',
+                3: 'fas fa-headphones',
+                4: 'fas fa-watch'
+            };
+            return icons[categoryId] || 'fas fa-box';
+        }
+
+        function getCategoryName(categoryId) {
+            const categories = {
+                1: 'Computers & Laptops',
+                2: 'Mobile Devices',
+                3: 'Audio & Accessories',
+                4: 'Wearables'
+            };
+            return categories[categoryId] || 'General';
+        }
+
+        function addToCart() {
+            if (!currentProduct) return;
+            
+            const quantity = parseInt($('#quantity').val());
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            
+            const existingItem = cart.find(item => item.id === currentProduct.id);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({
+                    id: currentProduct.id,
+                    name: currentProduct.name,
+                    price: currentProduct.price,
+                    quantity: quantity
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            
+            // Show success message
+            const toast = $(`
+                <div class="alert alert-success alert-dismissible fade show position-fixed" style="top: 20px; right: 20px; z-index: 9999;">
+                    <strong>Added to cart!</strong> ${quantity} x ${currentProduct.name}
+                    <button type="button" class="close" data-dismiss="alert">
+                        <span>&times;</span>
+                    </button>
+                </div>
+            `);
+            $('body').append(toast);
+            setTimeout(() => toast.alert('close'), 3000);
+        }
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            $('#cartCount').text(totalItems);
+        }
+
+        function showError(message) {
+            $('#productContent').html(`
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <div class="alert alert-danger">
+                            <h4>Error</h4>
+                            <p>${message}</p>
+                            <a href="/legacy-ecommerce/products" class="btn btn-primary">Back to Products</a>
+                        </div>
+                    </div>
+                </div>
+            `);
+        }
+    </script>
+</body>
+</html>
