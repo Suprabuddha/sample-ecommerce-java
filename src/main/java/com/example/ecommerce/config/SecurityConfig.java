@@ -4,23 +4,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * Security configuration with intentional security issues (technical debt)
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
     /**
-     * TECHNICAL DEBT: Using deprecated WebSecurityConfigurerAdapter
-     * Should use SecurityFilterChain in newer versions
+     * Migrated from WebSecurityConfigurerAdapter to SecurityFilterChain bean pattern
+     * Compatible with Spring Boot 2.x and 3.x
      */
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             // TECHNICAL DEBT: Disabling CSRF protection completely
             .csrf().disable()
@@ -34,6 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             // TECHNICAL DEBT: Disabling frame options for H2 console (security risk)
             .and()
             .headers().frameOptions().disable();
+        
+        return http.build();
     }
 
     /**
