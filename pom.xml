@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.18.RELEASE</version>
+        <version>3.2.12</version>
         <relativePath/>
     </parent>
 
@@ -27,8 +27,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         
         <!-- Intentionally old versions for technical debt -->
-        <hibernate.version>5.3.20.Final</hibernate.version>
-        <jackson.version>2.9.10</jackson.version>
         <commons-lang.version>2.6</commons-lang.version>
         <log4j.version>1.2.17</log4j.version>
     </properties>

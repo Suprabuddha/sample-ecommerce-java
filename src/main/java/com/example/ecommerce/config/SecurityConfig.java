@@ -27,8 +27,8 @@ public class SecurityConfig {
             
             // TECHNICAL DEBT: Allowing all requests without authentication
             .authorizeRequests()
-                .antMatchers("/api/**").permitAll()
-                .antMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/api/**").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().permitAll()
             
             // TECHNICAL DEBT: Disabling frame options for H2 console (security risk)
