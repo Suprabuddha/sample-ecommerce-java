@@ -1,6 +1,6 @@
 package com.example.ecommerce.model;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
