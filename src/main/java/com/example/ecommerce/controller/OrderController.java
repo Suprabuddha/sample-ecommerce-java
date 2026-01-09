@@ -2,7 +2,8 @@ package com.example.ecommerce.controller;
 
 import com.example.ecommerce.model.Order;
 import com.example.ecommerce.service.OrderService;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ import java.util.Optional;
 public class OrderController {
 
     // TECHNICAL DEBT: Using deprecated Log4j
-    private static final Logger logger = Logger.getLogger(OrderController.class);
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
     @Autowired
     private OrderService orderService;
