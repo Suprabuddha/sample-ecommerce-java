@@ -96,10 +96,23 @@
             <version>4.5.6</version>
         </dependency>
         
-        <!-- Old validation - removed explicit version to use Spring Boot managed version -->
+        <!-- Jakarta EE dependencies for Java 21 and Spring Boot 3.x compatibility -->
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>2.1.1</version>
         </dependency>
         
         <!-- Hibernate Validator for Bean Validation -->
