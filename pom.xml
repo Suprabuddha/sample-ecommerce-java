@@ -29,7 +29,7 @@
         <!-- Intentionally old versions for technical debt -->
         <hibernate.version>6.4.4.Final</hibernate.version>
         <jackson.version>2.9.10</jackson.version>
-        <commons-lang.version>2.6</commons-lang.version>
+        <commons-lang3.version>3.14.0</commons-lang3.version>
         <log4j.version>1.2.17</log4j.version>
     </properties>
 
@@ -65,9 +65,9 @@
 
         <!-- Technical Debt Dependencies - Intentionally Old Versions -->
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>${commons-lang.version}</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
         </dependency>
         
         <dependency>
