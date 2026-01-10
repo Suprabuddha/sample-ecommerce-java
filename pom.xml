@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.18.RELEASE</version>
+        <version>3.2.12</version>
         <relativePath/>
     </parent>
 
@@ -26,11 +26,8 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         
-        <!-- Intentionally old versions for technical debt -->
-        <hibernate.version>6.4.4.Final</hibernate.version>
-        <jackson.version>2.15.2</jackson.version>
+        <!-- Dependencies managed by Spring Boot 3.2.12 BOM -->
         <commons-lang3.version>3.14.0</commons-lang3.version>
-        <log4j.version>1.2.17</log4j.version>
     </properties>
 
     <dependencies>
@@ -70,18 +67,6 @@
             <version>${commons-lang3.version}</version>
         </dependency>
         
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        
         <!-- Old JSON processing library -->
         <dependency>
             <groupId>org.json</groupId>
@@ -115,12 +100,6 @@
             <version>2.1.1</version>
         </dependency>
         
-        <!-- Hibernate Validator for Bean Validation -->
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-        </dependency>
-
         <!-- Test Dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

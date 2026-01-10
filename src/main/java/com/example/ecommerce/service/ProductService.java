@@ -3,7 +3,8 @@ package com.example.ecommerce.service;
 import com.example.ecommerce.model.Product;
 import com.example.ecommerce.repository.ProductRepository;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +15,13 @@ import java.util.Optional;
 
 /**
  * Product service with technical debt patterns
- * Uses deprecated Log4j and commons-lang
+ * Migrated from Log4j to SLF4J
  */
 @Service
 public class ProductService {
 
-    // TECHNICAL DEBT: Using deprecated Log4j instead of SLF4J
-    private static final Logger logger = Logger.getLogger(ProductService.class);
+    // Migrated from Log4j to SLF4J for Spring Boot 3.x compatibility
+    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
     @Autowired
     private ProductRepository productRepository;
