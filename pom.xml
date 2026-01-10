@@ -103,7 +103,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-            <version>3.3.4</version>
         </dependency>
     </dependencies>
 
