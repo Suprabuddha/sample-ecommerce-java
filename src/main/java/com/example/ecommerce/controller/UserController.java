@@ -2,7 +2,8 @@ package com.example.ecommerce.controller;
 
 import com.example.ecommerce.model.User;
 import com.example.ecommerce.service.UserService;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,8 @@ import java.util.Optional;
 @RequestMapping("/api/users")
 public class UserController {
 
-    // TECHNICAL DEBT: Using deprecated Log4j
-    private static final Logger logger = Logger.getLogger(UserController.class);
+    // Updated to use SLF4J Logger
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;
