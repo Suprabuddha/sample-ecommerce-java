@@ -5,11 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
  * Main application class for Legacy Ecommerce Application
- * Uses deprecated WebMvcConfigurerAdapter for technical debt
+ * Updated to use WebMvcConfigurer interface directly (Spring Boot 3.x compatible)
  */
 @SpringBootApplication
 public class LegacyEcommerceApplication {
@@ -19,12 +18,12 @@ public class LegacyEcommerceApplication {
     }
 
     /**
-     * CORS configuration using deprecated WebMvcConfigurerAdapter
-     * This is intentional technical debt
+     * CORS configuration using modern WebMvcConfigurer lambda pattern
+     * Updated for Spring Boot 3.x compatibility
      */
     @Bean
     public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurerAdapter() {
+        return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")

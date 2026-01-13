@@ -4,45 +4,46 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Security configuration with intentional security issues (technical debt)
+ * Security configuration updated for Spring Boot 3.x / Spring Security 6.x
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
     /**
-     * TECHNICAL DEBT: Using deprecated WebSecurityConfigurerAdapter
-     * Should use SecurityFilterChain in newer versions
+     * Updated to use SecurityFilterChain pattern (Spring Security 6.x)
+     * Replaced deprecated WebSecurityConfigurerAdapter
      */
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // TECHNICAL DEBT: Disabling CSRF protection completely
-            .csrf().disable()
+            // TECHNICAL DEBT: Still disabling CSRF protection
+            .csrf(csrf -> csrf.disable())
             
-            // TECHNICAL DEBT: Allowing all requests without authentication
-            .authorizeRequests()
-                .antMatchers("/api/**").permitAll()
-                .antMatchers("/h2-console/**").permitAll()
+            // Updated to use authorizeHttpRequests and requestMatchers (Spring Security 6.x)
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/**").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().permitAll()
+            )
             
-            // TECHNICAL DEBT: Disabling frame options for H2 console (security risk)
-            .and()
-            .headers().frameOptions().disable();
+            // TECHNICAL DEBT: Disabling frame options for H2 console
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
+        
+        return http.build();
     }
 
     /**
-     * TECHNICAL DEBT: Using deprecated NoOpPasswordEncoder
-     * Passwords are stored and compared in plain text
+     * Updated to BCryptPasswordEncoder for better security
+     * NOTE: Existing plain text passwords in database will need migration
      */
     @Bean
-    @SuppressWarnings("deprecation")
     public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 }
