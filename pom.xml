@@ -28,7 +28,7 @@
         
         <!-- Removed explicit hibernate.version - let Spring Boot 3.x manage it -->
         <jackson.version>2.15.2</jackson.version>
-        <log4j.version>1.2.17</log4j.version>
+        <!-- Removed log4j.version - Spring Boot 3.x uses Logback by default -->
     </properties>
 
     <dependencies>
@@ -68,11 +68,7 @@
             <version>3.14.0</version>
         </dependency>
         
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
+        <!-- Removed log4j dependency - Spring Boot 3.x uses Logback by default -->
         
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -121,12 +117,7 @@
             <scope>test</scope>
         </dependency>
         
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
+        <!-- Removed explicit junit:junit 4.12 - Spring Boot 3.x includes JUnit 5 by default -->
     </dependencies>
 
     <build>
