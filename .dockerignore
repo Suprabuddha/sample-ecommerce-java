@@ -1,0 +1,9 @@
+.git
+.gitignore
+.gitmodules
+README.md
+*.md
+target/
+Dockerfile
+.dockerignore
+DOCKER.md
