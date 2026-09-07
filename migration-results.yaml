@@ -1,0 +1,48 @@
+migration_status: COMPLETE
+spring_boot_version:
+  from: "3.2.12"
+  to: "4.1.0"
+java_version:
+  from: "17"
+  to: "21"
+build_tool: maven
+build_command: "JAVA_HOME=/usr/lib/jvm/java-25-amazon-corretto.x86_64 mvn clean verify"
+build_log: "target/build.log"
+build_result: SUCCESS
+
+tds_executed:
+  - name: springboot4-core-migration
+    status: COMPLETE
+    changes:
+      - "Updated spring-boot-starter-parent 3.2.12 -> 4.1.0"
+      - "Updated java.version 17 -> 21, maven.compiler.source/target 17 -> 21"
+      - "Renamed spring-boot-starter-web -> spring-boot-starter-webmvc"
+      - "Added spring-boot-starter-validation (no longer transitive)"
+      - "Removed explicit jackson-databind dependency (BOM-managed)"
+      - "Removed jackson.version property"
+      - "Removed JUnit 4 (junit:junit) dependency"
+      - "Removed redundant jakarta.validation-api and hibernate-validator (provided by starter-validation)"
+      - "Removed spring.thymeleaf.enabled property (no longer needed)"
+  - name: springboot4-security-testing
+    status: COMPLETE
+    changes:
+      - "Security config already uses lambda DSL with requestMatchers() - no changes needed"
+      - "No tests exist in the project - no test migration needed"
+      - "No @MockBean/@SpyBean usage - no changes needed"
+      - "No Testcontainers usage - no changes needed"
+  - name: springboot4-verification
+    status: COMPLETE
+    changes:
+      - "mvn clean verify: BUILD SUCCESS"
+
+unit_tests:
+  total: 0
+  passed: 0
+  failed: 0
+  skipped: 0
+  note: "No test classes exist in the project"
+
+manual_review_needed: []
+
+risks: []
+blockers: []
