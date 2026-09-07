@@ -18,7 +18,6 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    // TECHNICAL DEBT: Using deprecated Log4j
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Autowired

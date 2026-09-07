@@ -19,7 +19,6 @@ import java.util.Optional;
 @RequestMapping("/api/users")
 public class UserController {
 
-    // TECHNICAL DEBT: Using deprecated Log4j
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired

@@ -20,7 +20,6 @@ import java.util.Optional;
 @RequestMapping("/api/products")
 public class ProductController {
 
-    // TECHNICAL DEBT: Using deprecated Log4j
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @Autowired

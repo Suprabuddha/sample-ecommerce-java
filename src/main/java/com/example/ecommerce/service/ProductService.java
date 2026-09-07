@@ -20,7 +20,6 @@ import java.util.Optional;
 @Service
 public class ProductService {
 
-    // TECHNICAL DEBT: Using deprecated Log4j instead of SLF4J
     private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
     @Autowired

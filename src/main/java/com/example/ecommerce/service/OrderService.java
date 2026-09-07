@@ -21,7 +21,6 @@ import java.util.Optional;
 @Service
 public class OrderService {
 
-    // TECHNICAL DEBT: Using deprecated Log4j
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     @Autowired
