@@ -2,8 +2,9 @@ package com.example.ecommerce.service;
 
 import com.example.ecommerce.model.User;
 import com.example.ecommerce.repository.UserRepository;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ import java.util.Optional;
 public class UserService {
 
     // TECHNICAL DEBT: Using deprecated Log4j
-    private static final Logger logger = Logger.getLogger(UserService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
     private UserRepository userRepository;
