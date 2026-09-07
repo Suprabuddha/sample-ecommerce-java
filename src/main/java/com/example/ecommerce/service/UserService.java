@@ -35,7 +35,7 @@ public class UserService {
      * Get user by ID
      */
     public Optional<User> getUserById(Long id) {
-        logger.info("Fetching user with ID: " + id);
+        logger.info("Fetching user with ID: {}", id);
         return userRepository.findById(id);
     }
 
@@ -43,7 +43,7 @@ public class UserService {
      * Create new user - TECHNICAL DEBT: Stores plain text password
      */
     public User createUser(User user) {
-        logger.info("Creating new user: " + user.getUsername());
+        logger.info("Creating new user: {}", user.getUsername());
         
         // TECHNICAL DEBT: Basic validation using deprecated StringUtils
         if (StringUtils.isBlank(user.getUsername())) {
@@ -70,7 +70,7 @@ public class UserService {
      * Update user
      */
     public User updateUser(Long id, User userDetails) {
-        logger.info("Updating user with ID: " + id);
+        logger.info("Updating user with ID: {}", id);
         
         Optional<User> optionalUser = userRepository.findById(id);
         if (!optionalUser.isPresent()) {
@@ -100,7 +100,7 @@ public class UserService {
      * Delete user - TECHNICAL DEBT: Hard delete, no soft delete option
      */
     public void deleteUser(Long id) {
-        logger.info("Deleting user with ID: " + id);
+        logger.info("Deleting user with ID: {}", id);
         
         if (!userRepository.existsById(id)) {
             throw new RuntimeException("User not found with ID: " + id);
@@ -113,7 +113,7 @@ public class UserService {
      * Authenticate user - TECHNICAL DEBT: Plain text password comparison
      */
     public Optional<User> authenticateUser(String username, String password) {
-        logger.info("Authenticating user: " + username);
+        logger.info("Authenticating user: {}", username);
         
         if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
             return Optional.empty();
@@ -127,9 +127,9 @@ public class UserService {
             User authenticatedUser = user.get();
             authenticatedUser.setLastLogin(new Date());
             userRepository.save(authenticatedUser);
-            logger.info("User authenticated successfully: " + username);
+            logger.info("User authenticated successfully: {}", username);
         } else {
-            logger.warn("Authentication failed for user: " + username);
+            logger.warn("Authentication failed for user: {}", username);
         }
         
         return user;
@@ -139,7 +139,7 @@ public class UserService {
      * Find user by username
      */
     public Optional<User> findByUsername(String username) {
-        logger.info("Finding user by username: " + username);
+        logger.info("Finding user by username: {}", username);
         return userRepository.findByUsername(username);
     }
 
@@ -147,7 +147,7 @@ public class UserService {
      * Find user by email
      */
     public Optional<User> findByEmail(String email) {
-        logger.info("Finding user by email: " + email);
+        logger.info("Finding user by email: {}", email);
         return userRepository.findByEmail(email);
     }
 
@@ -163,7 +163,7 @@ public class UserService {
      * Change password - TECHNICAL DEBT: No old password verification, plain text storage
      */
     public void changePassword(Long userId, String newPassword) {
-        logger.info("Changing password for user ID: " + userId);
+        logger.info("Changing password for user ID: {}", userId);
         
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
@@ -179,7 +179,7 @@ public class UserService {
             user.setPassword(newPassword);
             userRepository.save(user);
             
-            logger.info("Password changed successfully for user ID: " + userId);
+            logger.info("Password changed successfully for user ID: {}", userId);
         } else {
             throw new RuntimeException("User not found with ID: " + userId);
         }
@@ -189,7 +189,7 @@ public class UserService {
      * Deactivate user instead of deleting
      */
     public void deactivateUser(Long userId) {
-        logger.info("Deactivating user with ID: " + userId);
+        logger.info("Deactivating user with ID: {}", userId);
         
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {

@@ -46,7 +46,7 @@ public class OrderController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
-        logger.info("GET /api/orders/" + id);
+        logger.info("GET /api/orders/{}", id);
         
         try {
             Optional<Order> order = orderService.getOrderById(id);
@@ -56,7 +56,7 @@ public class OrderController {
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
-            logger.error("Error fetching order with ID: " + id, e);
+            logger.error("Error fetching order with ID: {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -66,13 +66,13 @@ public class OrderController {
      */
     @PostMapping
     public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest request) {
-        logger.info("POST /api/orders - Creating order for user: " + request.getUserId());
+        logger.info("POST /api/orders - Creating order for user: {}", request.getUserId());
         
         try {
             Order createdOrder = orderService.createOrder(request.getUserId(), request.getShippingAddress());
             return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
         } catch (RuntimeException e) {
-            logger.warn("Error creating order: " + e.getMessage());
+            logger.warn("Error creating order: {}", e.getMessage());
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             logger.error("Error creating order", e);
@@ -85,7 +85,7 @@ public class OrderController {
      */
     @PostMapping("/{orderId}/items")
     public ResponseEntity<Order> addItemToOrder(@PathVariable Long orderId, @RequestBody AddItemRequest request) {
-        logger.info("POST /api/orders/" + orderId + "/items - Adding product: " + request.getProductId());
+        logger.info("POST /api/orders/{}/items - Adding product: {}", orderId, request.getProductId());
         
         try {
             Order updatedOrder = orderService.addItemToOrder(
@@ -95,7 +95,7 @@ public class OrderController {
             );
             return ResponseEntity.ok(updatedOrder);
         } catch (RuntimeException e) {
-            logger.warn("Error adding item to order: " + e.getMessage());
+            logger.warn("Error adding item to order: {}", e.getMessage());
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             logger.error("Error adding item to order", e);
@@ -108,17 +108,17 @@ public class OrderController {
      */
     @PatchMapping("/{id}/status")
     public ResponseEntity<Order> updateOrderStatus(@PathVariable Long id, @RequestBody UpdateStatusRequest request) {
-        logger.info("PATCH /api/orders/" + id + "/status - New status: " + request.getStatus());
+        logger.info("PATCH /api/orders/{}/status - New status: {}", id, request.getStatus());
         
         try {
             Order.OrderStatus status = Order.OrderStatus.valueOf(request.getStatus());
             Order updatedOrder = orderService.updateOrderStatus(id, status);
             return ResponseEntity.ok(updatedOrder);
         } catch (IllegalArgumentException e) {
-            logger.warn("Invalid order status: " + request.getStatus());
+            logger.warn("Invalid order status: {}", request.getStatus());
             return ResponseEntity.badRequest().build();
         } catch (RuntimeException e) {
-            logger.warn("Order not found: " + e.getMessage());
+            logger.warn("Order not found: {}", e.getMessage());
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
             logger.error("Error updating order status", e);
@@ -131,13 +131,13 @@ public class OrderController {
      */
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Order>> getOrdersByUser(@PathVariable Long userId) {
-        logger.info("GET /api/orders/user/" + userId);
+        logger.info("GET /api/orders/user/{}", userId);
         
         try {
             List<Order> orders = orderService.getOrdersByUser(userId);
             return ResponseEntity.ok(orders);
         } catch (Exception e) {
-            logger.error("Error fetching orders for user: " + userId, e);
+            logger.error("Error fetching orders for user: {}", userId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -147,14 +147,14 @@ public class OrderController {
      */
     @GetMapping("/status/{status}")
     public ResponseEntity<List<Order>> getOrdersByStatus(@PathVariable String status) {
-        logger.info("GET /api/orders/status/" + status);
+        logger.info("GET /api/orders/status/{}", status);
         
         try {
             Order.OrderStatus orderStatus = Order.OrderStatus.valueOf(status.toUpperCase());
             List<Order> orders = orderService.getOrdersByStatus(orderStatus);
             return ResponseEntity.ok(orders);
         } catch (IllegalArgumentException e) {
-            logger.warn("Invalid order status: " + status);
+            logger.warn("Invalid order status: {}", status);
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             logger.error("Error fetching orders by status", e);
@@ -167,13 +167,13 @@ public class OrderController {
      */
     @GetMapping("/{id}/total")
     public ResponseEntity<BigDecimal> calculateOrderTotal(@PathVariable Long id) {
-        logger.info("GET /api/orders/" + id + "/total");
+        logger.info("GET /api/orders/{}/total", id);
         
         try {
             BigDecimal total = orderService.calculateOrderTotal(id);
             return ResponseEntity.ok(total);
         } catch (RuntimeException e) {
-            logger.warn("Order not found: " + e.getMessage());
+            logger.warn("Order not found: {}", e.getMessage());
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
             logger.error("Error calculating order total", e);
@@ -186,13 +186,13 @@ public class OrderController {
      */
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<Order> cancelOrder(@PathVariable Long id) {
-        logger.info("PATCH /api/orders/" + id + "/cancel");
+        logger.info("PATCH /api/orders/{}/cancel", id);
         
         try {
             Order cancelledOrder = orderService.cancelOrder(id);
             return ResponseEntity.ok(cancelledOrder);
         } catch (RuntimeException e) {
-            logger.warn("Order not found: " + e.getMessage());
+            logger.warn("Order not found: {}", e.getMessage());
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
             logger.error("Error cancelling order", e);
@@ -205,7 +205,7 @@ public class OrderController {
      */
     @PostMapping("/{id}/payment")
     public ResponseEntity<PaymentResponse> processPayment(@PathVariable Long id, @RequestBody PaymentRequest request) {
-        logger.info("POST /api/orders/" + id + "/payment - Amount: " + request.getAmount());
+        logger.info("POST /api/orders/{}/payment - Amount: {}", id, request.getAmount());
         
         try {
             boolean success = orderService.processPayment(id, request.getAmount());
