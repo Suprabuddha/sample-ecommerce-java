@@ -2,8 +2,9 @@ package com.example.ecommerce.service;
 
 import com.example.ecommerce.model.Product;
 import com.example.ecommerce.repository.ProductRepository;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +20,7 @@ import java.util.Optional;
 @Service
 public class ProductService {
 
-    // TECHNICAL DEBT: Using deprecated Log4j instead of SLF4J
-    private static final Logger logger = Logger.getLogger(ProductService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
     @Autowired
     private ProductRepository productRepository;
@@ -37,7 +37,7 @@ public class ProductService {
      * Get product by ID
      */
     public Optional<Product> getProductById(Long id) {
-        logger.info("Fetching product with ID: " + id);
+        logger.info("Fetching product with ID: {}", id);
         return productRepository.findById(id);
     }
 
@@ -45,7 +45,7 @@ public class ProductService {
      * Create new product with validation using deprecated commons-lang
      */
     public Product createProduct(Product product) {
-        logger.info("Creating new product: " + product.getName());
+        logger.info("Creating new product: {}", product.getName());
         
         // TECHNICAL DEBT: Basic validation using deprecated StringUtils
         if (StringUtils.isBlank(product.getName())) {
@@ -66,7 +66,7 @@ public class ProductService {
      * Update product - TECHNICAL DEBT: No proper validation or error handling
      */
     public Product updateProduct(Long id, Product productDetails) {
-        logger.info("Updating product with ID: " + id);
+        logger.info("Updating product with ID: {}", id);
         
         Optional<Product> optionalProduct = productRepository.findById(id);
         if (!optionalProduct.isPresent()) {
@@ -98,7 +98,7 @@ public class ProductService {
      * Delete product - TECHNICAL DEBT: No cascade handling
      */
     public void deleteProduct(Long id) {
-        logger.info("Deleting product with ID: " + id);
+        logger.info("Deleting product with ID: {}", id);
         
         if (!productRepository.existsById(id)) {
             throw new RuntimeException("Product not found with ID: " + id);
@@ -111,7 +111,7 @@ public class ProductService {
      * Search products by name - TECHNICAL DEBT: Using unsafe native query
      */
     public List<Product> searchProductsByName(String name) {
-        logger.info("Searching products by name: " + name);
+        logger.info("Searching products by name: {}", name);
         
         if (StringUtils.isBlank(name)) {
             return getAllProducts(); // TECHNICAL DEBT: Returns all products if no search term
@@ -124,7 +124,7 @@ public class ProductService {
      * Get products by category
      */
     public List<Product> getProductsByCategory(Long categoryId) {
-        logger.info("Fetching products for category: " + categoryId);
+        logger.info("Fetching products for category: {}", categoryId);
         return productRepository.findByCategoryId(categoryId);
     }
 
@@ -132,7 +132,7 @@ public class ProductService {
      * Get products by price range
      */
     public List<Product> getProductsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
-        logger.info("Fetching products in price range: " + minPrice + " - " + maxPrice);
+        logger.info("Fetching products in price range: {} - {}", minPrice, maxPrice);
         return productRepository.findByPriceBetween(minPrice, maxPrice);
     }
 
@@ -148,7 +148,7 @@ public class ProductService {
      * Update stock quantity - TECHNICAL DEBT: No concurrency control
      */
     public void updateStock(Long productId, Integer quantity) {
-        logger.info("Updating stock for product " + productId + " to " + quantity);
+        logger.info("Updating stock for product {} to {}", productId, quantity);
         
         Optional<Product> optionalProduct = productRepository.findById(productId);
         if (optionalProduct.isPresent()) {

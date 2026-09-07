@@ -5,7 +5,8 @@ import com.example.ecommerce.model.OrderItem;
 import com.example.ecommerce.model.Product;
 import com.example.ecommerce.model.User;
 import com.example.ecommerce.repository.OrderRepository;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +21,7 @@ import java.util.Optional;
 @Service
 public class OrderService {
 
-    // TECHNICAL DEBT: Using deprecated Log4j
-    private static final Logger logger = Logger.getLogger(OrderService.class);
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     @Autowired
     private OrderRepository orderRepository;
@@ -44,7 +44,7 @@ public class OrderService {
      * Get order by ID
      */
     public Optional<Order> getOrderById(Long id) {
-        logger.info("Fetching order with ID: " + id);
+        logger.info("Fetching order with ID: {}", id);
         return orderRepository.findById(id);
     }
 
@@ -52,7 +52,7 @@ public class OrderService {
      * Create new order - TECHNICAL DEBT: No proper validation or transaction management
      */
     public Order createOrder(Long userId, String shippingAddress) {
-        logger.info("Creating new order for user ID: " + userId);
+        logger.info("Creating new order for user ID: {}", userId);
         
         Optional<User> optionalUser = userService.getUserById(userId);
         if (!optionalUser.isPresent()) {
@@ -69,7 +69,7 @@ public class OrderService {
      * Add item to order - TECHNICAL DEBT: No stock validation, no concurrency control
      */
     public Order addItemToOrder(Long orderId, Long productId, Integer quantity) {
-        logger.info("Adding item to order " + orderId + ": product " + productId + ", quantity " + quantity);
+        logger.info("Adding item to order {}: product {}, quantity {}", orderId, productId, quantity);
         
         Optional<Order> optionalOrder = orderRepository.findById(orderId);
         if (!optionalOrder.isPresent()) {
@@ -86,8 +86,8 @@ public class OrderService {
         
         // TECHNICAL DEBT: No stock validation
         if (product.getStockQuantity() < quantity) {
-            logger.warn("Insufficient stock for product " + productId + ". Available: " + 
-                       product.getStockQuantity() + ", Requested: " + quantity);
+            logger.warn("Insufficient stock for product {}. Available: {}, Requested: {}",
+                       productId, product.getStockQuantity(), quantity);
             // Continue anyway - this is technical debt
         }
         
@@ -101,7 +101,7 @@ public class OrderService {
      * Update order status
      */
     public Order updateOrderStatus(Long orderId, Order.OrderStatus status) {
-        logger.info("Updating order " + orderId + " status to: " + status);
+        logger.info("Updating order {} status to: {}", orderId, status);
         
         Optional<Order> optionalOrder = orderRepository.findById(orderId);
         if (!optionalOrder.isPresent()) {
@@ -125,7 +125,7 @@ public class OrderService {
      * Get orders by user - TECHNICAL DEBT: Potential N+1 query problem
      */
     public List<Order> getOrdersByUser(Long userId) {
-        logger.info("Fetching orders for user ID: " + userId);
+        logger.info("Fetching orders for user ID: {}", userId);
         return orderRepository.findByUserId(userId);
     }
 
@@ -133,7 +133,7 @@ public class OrderService {
      * Get orders by status
      */
     public List<Order> getOrdersByStatus(Order.OrderStatus status) {
-        logger.info("Fetching orders with status: " + status);
+        logger.info("Fetching orders with status: {}", status);
         return orderRepository.findByStatus(status);
     }
 
@@ -141,7 +141,7 @@ public class OrderService {
      * Calculate order total - TECHNICAL DEBT: Simple calculation without tax, shipping, discounts
      */
     public BigDecimal calculateOrderTotal(Long orderId) {
-        logger.info("Calculating total for order: " + orderId);
+        logger.info("Calculating total for order: {}", orderId);
         
         Optional<Order> optionalOrder = orderRepository.findById(orderId);
         if (!optionalOrder.isPresent()) {
@@ -167,7 +167,7 @@ public class OrderService {
      * Cancel order - TECHNICAL DEBT: No proper cancellation logic
      */
     public Order cancelOrder(Long orderId) {
-        logger.info("Cancelling order: " + orderId);
+        logger.info("Cancelling order: {}", orderId);
         
         Optional<Order> optionalOrder = orderRepository.findById(orderId);
         if (!optionalOrder.isPresent()) {
@@ -196,7 +196,7 @@ public class OrderService {
      * Process order payment - TECHNICAL DEBT: Dummy implementation
      */
     public boolean processPayment(Long orderId, BigDecimal amount) {
-        logger.info("Processing payment for order " + orderId + ": $" + amount);
+        logger.info("Processing payment for order {}: ${}", orderId, amount);
         
         // TECHNICAL DEBT: Dummy payment processing
         // In real implementation, this would integrate with payment gateway
@@ -205,11 +205,11 @@ public class OrderService {
             Thread.sleep(1000); // Simulate payment processing delay
             
             // TECHNICAL DEBT: Always returns true (no real payment validation)
-            logger.info("Payment processed successfully for order: " + orderId);
+            logger.info("Payment processed successfully for order: {}", orderId);
             return true;
             
         } catch (InterruptedException e) {
-            logger.error("Payment processing interrupted for order: " + orderId, e);
+            logger.error("Payment processing interrupted for order: {}", orderId, e);
             return false;
         }
     }
