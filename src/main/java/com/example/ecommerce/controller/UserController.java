@@ -2,7 +2,8 @@ package com.example.ecommerce.controller;
 
 import com.example.ecommerce.model.User;
 import com.example.ecommerce.service.UserService;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,7 @@ import java.util.Optional;
 @RequestMapping("/api/users")
 public class UserController {
 
-    // TECHNICAL DEBT: Using deprecated Log4j
-    private static final Logger logger = Logger.getLogger(UserController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;
@@ -46,7 +46,7 @@ public class UserController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        logger.info("GET /api/users/" + id);
+        logger.info("GET /api/users/{}", id);
         
         try {
             Optional<User> user = userService.getUserById(id);
@@ -57,7 +57,7 @@ public class UserController {
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
-            logger.error("Error fetching user with ID: " + id, e);
+            logger.error("Error fetching user with ID: {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -67,13 +67,13 @@ public class UserController {
      */
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        logger.info("POST /api/users - Creating user: " + user.getUsername());
+        logger.info("POST /api/users - Creating user: {}", user.getUsername());
         
         try {
             User createdUser = userService.createUser(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
         } catch (IllegalArgumentException e) {
-            logger.warn("Invalid user data: " + e.getMessage());
+            logger.warn("Invalid user data: {}", e.getMessage());
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             logger.error("Error creating user", e);
@@ -86,16 +86,16 @@ public class UserController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
-        logger.info("PUT /api/users/" + id);
+        logger.info("PUT /api/users/{}", id);
         
         try {
             User updatedUser = userService.updateUser(id, userDetails);
             return ResponseEntity.ok(updatedUser);
         } catch (RuntimeException e) {
-            logger.warn("User not found: " + e.getMessage());
+            logger.warn("User not found: {}", e.getMessage());
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            logger.error("Error updating user with ID: " + id, e);
+            logger.error("Error updating user with ID: {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -105,16 +105,16 @@ public class UserController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        logger.info("DELETE /api/users/" + id);
+        logger.info("DELETE /api/users/{}", id);
         
         try {
             userService.deleteUser(id);
             return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
-            logger.warn("User not found: " + e.getMessage());
+            logger.warn("User not found: {}", e.getMessage());
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            logger.error("Error deleting user with ID: " + id, e);
+            logger.error("Error deleting user with ID: {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -124,7 +124,7 @@ public class UserController {
      */
     @PostMapping("/login")
     public ResponseEntity<User> login(@RequestBody LoginRequest loginRequest) {
-        logger.info("POST /api/users/login - User: " + loginRequest.getUsername());
+        logger.info("POST /api/users/login - User: {}", loginRequest.getUsername());
         
         try {
             Optional<User> user = userService.authenticateUser(
@@ -149,7 +149,7 @@ public class UserController {
      */
     @GetMapping("/username/{username}")
     public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
-        logger.info("GET /api/users/username/" + username);
+        logger.info("GET /api/users/username/{}", username);
         
         try {
             Optional<User> user = userService.findByUsername(username);
@@ -159,7 +159,7 @@ public class UserController {
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
-            logger.error("Error fetching user by username: " + username, e);
+            logger.error("Error fetching user by username: {}", username, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -185,16 +185,16 @@ public class UserController {
      */
     @PatchMapping("/{id}/password")
     public ResponseEntity<Void> changePassword(@PathVariable Long id, @RequestBody PasswordChangeRequest request) {
-        logger.info("PATCH /api/users/" + id + "/password");
+        logger.info("PATCH /api/users/{}/password", id);
         
         try {
             userService.changePassword(id, request.getNewPassword());
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
-            logger.warn("Error changing password: " + e.getMessage());
+            logger.warn("Error changing password: {}", e.getMessage());
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
-            logger.error("Error changing password for user ID: " + id, e);
+            logger.error("Error changing password for user ID: {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -204,16 +204,16 @@ public class UserController {
      */
     @PatchMapping("/{id}/deactivate")
     public ResponseEntity<Void> deactivateUser(@PathVariable Long id) {
-        logger.info("PATCH /api/users/" + id + "/deactivate");
+        logger.info("PATCH /api/users/{}/deactivate", id);
         
         try {
             userService.deactivateUser(id);
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
-            logger.warn("User not found: " + e.getMessage());
+            logger.warn("User not found: {}", e.getMessage());
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            logger.error("Error deactivating user with ID: " + id, e);
+            logger.error("Error deactivating user with ID: {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

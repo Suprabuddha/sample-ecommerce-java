@@ -2,7 +2,8 @@ package com.example.ecommerce.controller;
 
 import com.example.ecommerce.model.Product;
 import com.example.ecommerce.service.ProductService;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,7 @@ import java.util.Optional;
 @RequestMapping("/api/products")
 public class ProductController {
 
-    // TECHNICAL DEBT: Using deprecated Log4j
-    private static final Logger logger = Logger.getLogger(ProductController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @Autowired
     private ProductService productService;
@@ -46,7 +46,7 @@ public class ProductController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        logger.info("GET /api/products/" + id);
+        logger.info("GET /api/products/{}", id);
         
         try {
             Optional<Product> product = productService.getProductById(id);
@@ -56,7 +56,7 @@ public class ProductController {
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
-            logger.error("Error fetching product with ID: " + id, e);
+            logger.error("Error fetching product with ID: {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -66,13 +66,13 @@ public class ProductController {
      */
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        logger.info("POST /api/products - Creating product: " + product.getName());
+        logger.info("POST /api/products - Creating product: {}", product.getName());
         
         try {
             Product createdProduct = productService.createProduct(product);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
         } catch (IllegalArgumentException e) {
-            logger.warn("Invalid product data: " + e.getMessage());
+            logger.warn("Invalid product data: {}", e.getMessage());
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             logger.error("Error creating product", e);
@@ -85,16 +85,16 @@ public class ProductController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
-        logger.info("PUT /api/products/" + id);
+        logger.info("PUT /api/products/{}", id);
         
         try {
             Product updatedProduct = productService.updateProduct(id, productDetails);
             return ResponseEntity.ok(updatedProduct);
         } catch (RuntimeException e) {
-            logger.warn("Product not found: " + e.getMessage());
+            logger.warn("Product not found: {}", e.getMessage());
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            logger.error("Error updating product with ID: " + id, e);
+            logger.error("Error updating product with ID: {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -104,16 +104,16 @@ public class ProductController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        logger.info("DELETE /api/products/" + id);
+        logger.info("DELETE /api/products/{}", id);
         
         try {
             productService.deleteProduct(id);
             return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
-            logger.warn("Product not found: " + e.getMessage());
+            logger.warn("Product not found: {}", e.getMessage());
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            logger.error("Error deleting product with ID: " + id, e);
+            logger.error("Error deleting product with ID: {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -123,7 +123,7 @@ public class ProductController {
      */
     @GetMapping("/search")
     public ResponseEntity<List<Product>> searchProducts(@RequestParam String name) {
-        logger.info("GET /api/products/search?name=" + name);
+        logger.info("GET /api/products/search?name={}", name);
         
         try {
             List<Product> products = productService.searchProductsByName(name);
@@ -139,7 +139,7 @@ public class ProductController {
      */
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<Product>> getProductsByCategory(@PathVariable Long categoryId) {
-        logger.info("GET /api/products/category/" + categoryId);
+        logger.info("GET /api/products/category/{}", categoryId);
         
         try {
             List<Product> products = productService.getProductsByCategory(categoryId);
@@ -158,7 +158,7 @@ public class ProductController {
             @RequestParam BigDecimal minPrice, 
             @RequestParam BigDecimal maxPrice) {
         
-        logger.info("GET /api/products/price-range?minPrice=" + minPrice + "&maxPrice=" + maxPrice);
+        logger.info("GET /api/products/price-range?minPrice={}&maxPrice={}", minPrice, maxPrice);
         
         try {
             // TECHNICAL DEBT: No validation of price range parameters
@@ -191,17 +191,17 @@ public class ProductController {
      */
     @PatchMapping("/{id}/stock")
     public ResponseEntity<Void> updateStock(@PathVariable Long id, @RequestParam Integer quantity) {
-        logger.info("PATCH /api/products/" + id + "/stock?quantity=" + quantity);
+        logger.info("PATCH /api/products/{}/stock?quantity={}", id, quantity);
         
         try {
             // TECHNICAL DEBT: No validation of quantity parameter
             productService.updateStock(id, quantity);
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
-            logger.warn("Product not found: " + e.getMessage());
+            logger.warn("Product not found: {}", e.getMessage());
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            logger.error("Error updating stock for product ID: " + id, e);
+            logger.error("Error updating stock for product ID: {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
